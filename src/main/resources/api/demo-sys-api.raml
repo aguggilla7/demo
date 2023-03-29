@@ -1,0 +1,22 @@
+#%RAML 1.0
+title: demo-sys-api
+description: providing all employees information
+version: v1
+protocols: [HTTP,HTTPS]
+mediaType: 
+ - application/json
+uses:
+  lib: libraries/library.raml
+
+resourceTypes:
+  employeeType: !include resourceTypes/empRequestResourceType.raml
+  
+/employeeDetails:
+  is:
+    - lib.errorCodes
+    - lib.headers
+  type: 
+    employeeType:
+      
+    
+          

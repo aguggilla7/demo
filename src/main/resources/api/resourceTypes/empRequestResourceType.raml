@@ -1,0 +1,12 @@
+#%RAML 1.0 ResourceType
+  post:
+    body:
+      application/json:
+        type: !include ../dataTypes/employee-req-dataType.raml
+        example: !include ../examples/employee-request-example.raml
+    responses:
+      201:
+        body:
+          application/json:
+            type: !include ../dataTypes/employee-response-dataType.raml
+            example: !include ../examples/employee-response-example.raml

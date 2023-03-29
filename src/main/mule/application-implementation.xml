@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="employee-data-submission-implementationFlow" doc:id="8cd49c4d-53ed-4b73-a484-672d94df1610" >
+		<logger level="INFO" doc:name="Start" doc:id="7d43e993-d443-4a5d-87d8-59f179f71dfe" message="POST-PROCESSING-EMPLOYEE-DETAILS-IMPLEMENTATION-START"/>
+		<ee:transform doc:name="Transforming payload for submission" doc:id="644c3928-9341-4499-99c3-cea945fe3924">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item, index) -> {
+    "employeeId": item.employeeId,
+    "employeeName": item.employeeName,
+	"salary": item.salary,
+	"phone": item.phone,
+	"email": item.email,
+	"department": item.department
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="GET" doc:name="Call Backend Api" doc:id="5f38b0a7-6df2-4028-9cd0-a72aaad6b265" config-ref="HTTP_Request_configuration" path="${demo.backend.api.http.path}" responseTimeout="60000" />
+		<ee:transform doc:name="Transform Message" doc:id="01a0e0f1-3f28-4198-910a-56929d968895" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Status":{
+    "empId": payload.employeeInformation.employeeId,
+    "statusCode":payload.applicationStatus.statusCode,
+    "message":payload.applicationStatus.Message
+
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End" doc:id="0ae43c11-c59d-4a79-8d07-77cde962c7ac" message="POST-PROCESSING-EMPLOYEE-DETAILS-IMPLEMENTATION-END"/>
+	</flow>
+</mule>
